@@ -1,0 +1,33 @@
+# Rekent de Winkelaar-calculator na met de referentiecases uit winkelaar/tests/test-cases.js.
+# Draait bij elke pull request en elke push naar main, maar alleen als er iets in winkelaar/ verandert.
+# Wijkt een uitkomst meer dan 5 euro af, dan wordt de controle rood en zie je in de log welk veld fout gaat.
+name: Winkelaar tests
+
+on:
+  pull_request:
+    paths:
+      - 'winkelaar/**'
+      - '.github/workflows/winkelaar-tests.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'winkelaar/**'
+      - '.github/workflows/winkelaar-tests.yml'
+  # Maakt een knop "Run workflow" in het tabblad Actions, om de test met de hand te starten.
+  workflow_dispatch:
+
+jobs:
+  rekenen:
+    name: Referentiecases narekenen
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code ophalen
+        uses: actions/checkout@v4
+
+      - name: Node installeren
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Testcases draaien
+        run: node winkelaar/tests/test-cases.js

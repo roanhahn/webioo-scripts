@@ -22,5 +22,7 @@ if (require.main === module) {
     }
   }
   console.log(fouten === 0 ? 'Alle testcases OK (marge ±5 euro)' : fouten + ' afwijkingen');
+  // Een exitcode anders dan 0 laat een automatische controle (zoals GitHub Actions) mislukken.
+  if (fouten > 0) process.exitCode = 1;
 }
 module.exports = { TEST_CASES };
