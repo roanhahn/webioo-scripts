@@ -1,0 +1,7 @@
+[
+  {
+    "naam": "Winkelaar – eenmanszaak of bv calculator",
+    "url": "https://www.winkelaar.nl/eenmanszaak-of-bv-calculator",
+    "verwacht": ["winkelaar/rates-2026.js", "winkelaar/calculator.js"]
+  }
+]

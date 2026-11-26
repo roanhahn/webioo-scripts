@@ -1,0 +1,53 @@
+# Kijkt elke maandagochtend of de live sites de scripts uit deze repo nog goed laden.
+# Welke pagina's en bestanden worden gecontroleerd, staat in monitor/sites.json.
+# Gaat er iets mis, dan wordt er een issue aangemaakt in deze repo. Daar krijg je een mail van.
+name: Controle live sites
+
+on:
+  schedule:
+    # Maandag 06:17 UTC, dat is 07:17 in de winter en 08:17 in de zomer (Nederlandse tijd).
+    - cron: '17 6 * * 1'
+  # Knop "Run workflow" in het tabblad Actions, om de controle met de hand te starten.
+  workflow_dispatch:
+  # Bij een PR die de controle zelf aanpast, draait hij ook, maar dan zonder issue.
+  pull_request:
+    paths:
+      - 'monitor/**'
+      - '.github/workflows/controle-live-sites.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  controle:
+    name: Live sites controleren
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code ophalen
+        uses: actions/checkout@v4
+
+      - name: Node installeren
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Eigen tests van de controle
+        run: node --test monitor/tests/*.test.js
+
+      - name: Sites controleren
+        run: node monitor/check-sites.js
+
+      # Staat er al een open issue van deze controle, dan komt het nieuwe rapport als reactie
+      # daaronder. Zo krijg je niet elke week een nieuw issue voor hetzelfde probleem.
+      - name: Issue aanmaken of bijwerken
+        if: failure() && github.event_name != 'pull_request' && hashFiles('monitor-rapport.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          nummer=$(gh issue list --state open --search "Controle live sites in:title" --json number --jq '.[0].number')
+          if [ -n "$nummer" ]; then
+            gh issue comment "$nummer" --body-file monitor-rapport.md
+          else
+            gh issue create --title "Controle live sites: probleem gevonden" --body-file monitor-rapport.md
+          fi
