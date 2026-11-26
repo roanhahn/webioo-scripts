@@ -1,0 +1,18 @@
+/*
+ * Nettere regelafbreking
+ *
+ * balance: verdeelt de tekst van een kop zo gelijk mogelijk over de regels,
+ *          zodat er geen lange regel met een kort restje eronder staat.
+ * pretty:  laat de browser bij lopende tekst de laatste regels zo afbreken dat
+ *          er geen los woord onderaan overblijft.
+ *
+ * Browsers die dit niet kennen, slaan het over. Het script weeswoorden.js
+ * zorgt er in alle browsers voor dat de laatste twee woorden bij elkaar blijven.
+ */
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+p, li, blockquote, figcaption {
+  text-wrap: pretty;
+}

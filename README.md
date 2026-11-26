@@ -10,6 +10,10 @@ Eén map per klant, alles in kleine letters.
 
 ```
 scripts/
+├── shared/                  herbruikbaar voor alle klanten
+│   ├── weeswoorden.js       voorkomt één los woord op de laatste regel
+│   ├── weeswoorden.css      nettere regelafbreking voor koppen en alinea's
+│   └── tests/
 └── winkelaar/
     ├── rates-2026.js        tarieven en grenzen 2026 (alleen data)
     ├── calculator.js        rekenlogica en weergave van de eenmanszaak/BV-calculator
@@ -36,7 +40,7 @@ Elke versie heeft een eigen hash. Klopt de hash niet met het bestand, dan laadt 
 
 ## Versies
 
-- Tags gelden voor de hele repo, dus met de klant ervoor: `winkelaar-v1.0.0`, `winkelaar-v1.0.1`.
+- Tags gelden voor de hele repo, dus met de klant (of `shared`) ervoor: `winkelaar-v1.0.0`, `shared-v1.0.0`.
   - laatste cijfer: een fix
   - middelste cijfer: iets nieuws, de pagina in Webflow hoeft niet mee te veranderen
   - eerste cijfer: de pagina in Webflow moet mee aangepast worden
@@ -59,10 +63,31 @@ Geen geheimen in deze repo, zoals API-tokens of wachtwoorden. De repo is openbaa
 ## Testen
 
 ```bash
-node winkelaar/tests/test-cases.js
+npm install   # eenmalig, voor de paginatests
+npm test
 ```
 
-Vergelijkt de uitkomsten van de calculator met referentieberekeningen. Een verschil van een paar euro is normaal: de referentietools ronden per tussenstap af.
+Draait de tests van `shared/` in een nagebootste pagina en vergelijkt de Winkelaar-calculator met referentieberekeningen. Bij die laatste is een verschil van een paar euro normaal: de referentietools ronden per tussenstap af.
+
+## Gedeelde scripts
+
+### Weeswoorden
+
+Zet een vaste spatie tussen de laatste twee woorden van koppen, alinea's, lijstitems, citaten en bijschriften, zodat er nooit één woord alleen op de laatste regel staat. De CSS zorgt daarnaast in browsers die het kennen voor een evenwichtigere regelverdeling.
+
+```html
+<!-- Inside <head> tag -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/webioo-nl/scripts@shared-vX.Y.Z/shared/weeswoorden.css" integrity="sha384-…" crossorigin="anonymous">
+
+<!-- Before </body> tag -->
+<script src="https://cdn.jsdelivr.net/gh/webioo-nl/scripts@shared-vX.Y.Z/shared/weeswoorden.js" integrity="sha384-…" crossorigin="anonymous"></script>
+```
+
+- Teksten van minder dan drie woorden en teksten waarvan de laatste twee woorden samen langer zijn dan 18 tekens, worden overgeslagen.
+- Uitzetten voor een element en alles erbinnen: `data-weeswoord="uit"`.
+- Tekst die later op de pagina verschijnt (bijvoorbeeld bijgeladen CMS-items) wordt ook verwerkt.
+- Een bestaande `&nbsp;` tussen de laatste twee woorden blijft staan; het script doet dan niets.
+- Handmatig opnieuw uitvoeren voor een stuk van de pagina: `Weeswoorden.verwerk(element)`.
 
 ## In gebruik
 
