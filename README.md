@@ -98,3 +98,11 @@ Zet een vaste spatie tussen de laatste twee woorden van koppen, alinea's, lijsti
 ### Winkelaar: jaarlijkse tariefupdate
 
 De tarieven staan los van de rekenlogica in `rates-2026.js`. Voor een nieuw jaar komt er een nieuw tarievenbestand. Let op: `calculator.js` verwijst naar de naam `RATES_2026`, dus die verwijzing moet mee veranderen.
+
+## Controle live sites
+
+Elke maandagochtend kijkt GitHub Actions of de live sites de scripts uit deze repo nog goed laden: is de pagina bereikbaar, staan de scripts er nog in, en klopt de integrity-hash met het bestand bij jsDelivr. Gaat er iets mis, dan komt er een issue in deze repo.
+
+- Pagina's en bestanden staan in `monitor/sites.json`. Een site toevoegen = een blok bijschrijven met `naam`, `url` en `verwacht` (paden in deze repo).
+- Met de hand starten: tabblad Actions > Controle live sites > Run workflow.
+- GitHub zet geplande workflows uit als er 60 dagen niets in de repo gebeurt. Je krijgt daar vooraf een mail over; met één klik in het tabblad Actions zet je hem weer aan.

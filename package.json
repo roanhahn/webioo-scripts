@@ -3,7 +3,7 @@
   "private": true,
   "description": "Scripts voor klantsites van Webioo Digital Agency",
   "scripts": {
-    "test": "node --test shared/tests/*.test.js && node winkelaar/tests/test-cases.js"
+    "test": "node --test shared/tests/*.test.js monitor/tests/*.test.js && node winkelaar/tests/test-cases.js"
   },
   "devDependencies": {
     "jsdom": "^24.1.0"
