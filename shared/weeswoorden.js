@@ -7,7 +7,10 @@
  * twee woorden komen altijd samen op de laatste regel, bij elke schermbreedte.
  *
  * Welke elementen:   koppen, alinea's, lijstitems, citaten en bijschriften
- *                    (zie SELECTOR hieronder).
+ *                    (zie SELECTOR hieronder), en losse tekstblokken: een <div>
+ *                    waar alleen tekst (met eventueel een link, vet of cursief)
+ *                    in staat. Webflow maakt van een Text Block zo'n <div>.
+ *                    Een ander element erbij zetten kan met data-weeswoord="aan".
  * Overgeslagen:      teksten van minder dan drie woorden, en teksten waarvan
  *                    de laatste twee woorden samen te lang zijn om nog netjes
  *                    op een smal scherm te passen (zie MAX_LENGTE).
@@ -24,6 +27,14 @@
   'use strict';
 
   var SELECTOR = 'h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption';
+  // Alles wat wordt bekeken: de elementen hierboven, losse <div>'s en elementen die
+  // met data-weeswoord="aan" zijn aangezet. Bij <div>'s beslist tekstblok() verderop.
+  var KANDIDATEN = SELECTOR + ', div, [data-weeswoord="aan"]';
+  // Elementen die gewoon meelopen in de tekst. Staat er iets anders in een <div>
+  // (een afbeelding, een knop, een ander blok), dan is het een indelingsblok en
+  // geen tekstblok, en blijft het ongemoeid.
+  var INLINE = ['A', 'ABBR', 'B', 'BR', 'CITE', 'CODE', 'EM', 'I', 'MARK', 'SMALL',
+    'SPAN', 'STRONG', 'SUB', 'SUP', 'U', 'TIME', 'WBR'];
   var MAX_LENGTE = 18; // maximaal aantal tekens van de laatste twee woorden samen
   var MIN_WOORDEN = 3;
   var VASTE_SPATIE = '\u00A0';
@@ -46,9 +57,24 @@
     return knopen;
   }
 
+  // Is dit een <div> met alleen tekst en opmaak erin, zoals een Text Block?
+  function tekstblok(el) {
+    if (el.nodeName !== 'DIV') return false;
+    var kinderen = el.querySelectorAll('*');
+    for (var i = 0; i < kinderen.length; i++) {
+      if (INLINE.indexOf(kinderen[i].nodeName) === -1) return false;
+    }
+    return true;
+  }
+
   // Verwerkt één element. Geeft true terug als er een vaste spatie is gezet.
   function verwerkElement(el) {
     if (el.closest('[data-weeswoord="uit"]')) return false;
+
+    var aangezet = el.getAttribute('data-weeswoord') === 'aan';
+
+    // Een <div> telt alleen mee als het een tekstblok is (zie tekstblok()).
+    if (el.nodeName === 'DIV' && !aangezet && !tekstblok(el)) return false;
 
     // Bevat het element zelf weer koppen of alinea's (bijvoorbeeld een <li> met
     // een <p> erin), dan worden die binnenste elementen verwerkt en dit niet.
@@ -100,8 +126,8 @@
   function verwerk(bereik) {
     bereik = bereik || doc.body;
     var aantal = 0;
-    if (bereik.matches && bereik.matches(SELECTOR) && verwerkElement(bereik)) aantal++;
-    bereik.querySelectorAll(SELECTOR).forEach(function (el) {
+    if (bereik.matches && bereik.matches(KANDIDATEN) && verwerkElement(bereik)) aantal++;
+    bereik.querySelectorAll(KANDIDATEN).forEach(function (el) {
       if (verwerkElement(el)) aantal++;
     });
     return aantal;

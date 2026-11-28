@@ -98,3 +98,38 @@ test('tekst in script en style wordt niet aangeraakt', async () => {
   assert.strictEqual(d.querySelector('style').textContent, '.a { color: red }');
   assert.ok(tekst(d, 'p').endsWith(`stijlblok${NBSP}erin`));
 });
+
+test('een tekstblok (div met alleen tekst) doet mee', async () => {
+  const { d } = await laad('<div class="intro">Met dertig jaar ervaring staan wij klaar om jouw bedrijf naar het volgende niveau te brengen.</div>');
+  assert.ok(tekst(d, '.intro').endsWith(`te${NBSP}brengen.`));
+});
+
+test('een tekstblok met link of vet erin doet ook mee', async () => {
+  const { d } = await laad('<div>Lees meer over <strong>onze tarieven</strong></div>');
+  assert.strictEqual(html(d, 'div'), `Lees meer over <strong>onze&nbsp;tarieven</strong>`);
+});
+
+test('een indelingsblok met andere blokken erin blijft ongemoeid', async () => {
+  const { d } = await laad('<div id="rij">Los stukje tekst in een rij <div>Een tweede blok</div></div><div id="knop">Meer informatie over ons <img src="x.png"></div>');
+  assert.strictEqual(d.querySelector('#rij').firstChild.data, 'Los stukje tekst in een rij ');
+  assert.ok(!tekst(d, '#knop').includes(NBSP));
+});
+
+test('data-weeswoord="aan" zet een ander element aan', async () => {
+  const { d } = await laad('<section><span data-weeswoord="aan">Tekst in een los span element</span></section>');
+  assert.ok(tekst(d, 'span').endsWith(`span${NBSP}element`));
+});
+
+test('uit wint van een tekstblok en van aan', async () => {
+  const { d } = await laad('<div data-weeswoord="uit"><div>Dit tekstblok blijft zoals het is</div></div>');
+  assert.ok(!tekst(d, 'div div').includes(NBSP));
+});
+
+test('een tekstblok dat later verschijnt wordt ook verwerkt', async () => {
+  const { d } = await laad('<div id="lijst"></div>');
+  const blok = d.createElement('div');
+  blok.textContent = 'Een bijgeladen tekstblok in de lijst';
+  d.getElementById('lijst').appendChild(blok);
+  await new Promise(r => setTimeout(r, 50));
+  assert.ok(tekst(d, '#lijst div').endsWith(`de${NBSP}lijst`));
+});
