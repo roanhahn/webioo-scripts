@@ -73,7 +73,7 @@ Draait de tests van `shared/` in een nagebootste pagina en vergelijkt de Winkela
 
 ### Weeswoorden
 
-Zet een vaste spatie tussen de laatste twee woorden van koppen, alinea's, lijstitems, citaten en bijschriften, zodat er nooit één woord alleen op de laatste regel staat. De CSS zorgt daarnaast in browsers die het kennen voor een evenwichtigere regelverdeling.
+Zet een vaste spatie tussen de laatste twee woorden van koppen, alinea's, lijstitems, citaten, bijschriften en losse tekstblokken, zodat er nooit één woord alleen op de laatste regel staat. De CSS zorgt daarnaast in browsers die het kennen voor een evenwichtigere regelverdeling.
 
 ```html
 <!-- Inside <head> tag -->
@@ -84,7 +84,9 @@ Zet een vaste spatie tussen de laatste twee woorden van koppen, alinea's, lijsti
 ```
 
 - Teksten van minder dan drie woorden en teksten waarvan de laatste twee woorden samen langer zijn dan 18 tekens, worden overgeslagen.
+- Een tekstblok is een `<div>` waar alleen tekst (met eventueel een link, vet of cursief) in staat. Webflow maakt van een Text Block zo'n `<div>`. Een `<div>` met een afbeelding, knop of ander blok erin blijft ongemoeid.
 - Uitzetten voor een element en alles erbinnen: `data-weeswoord="uit"`.
+- Aanzetten voor een ander element (bijvoorbeeld een `<span>`): `data-weeswoord="aan"`.
 - Tekst die later op de pagina verschijnt (bijvoorbeeld bijgeladen CMS-items) wordt ook verwerkt.
 - Een bestaande `&nbsp;` tussen de laatste twee woorden blijft staan; het script doet dan niets.
 - Handmatig opnieuw uitvoeren voor een stuk van de pagina: `Weeswoorden.verwerk(element)`.
